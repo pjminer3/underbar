@@ -50,7 +50,7 @@
   _.each = function(collection, iterator) {
     if (Array.isArray(collection)) {
       // Iterate through each index if collection is an array object
-      for (var i = 0; i < collection.length; i++) {
+      for (let i = 0; i < collection.length; i++) {
         iterator(collection[i], i, collection);
       }
     } else {
@@ -59,6 +59,7 @@
         iterator(collection[key], key, collection);
       }
     }
+    //console.log(i);
   };
 
   // Returns the index at which value can be found in the array, or -1 if value
@@ -80,16 +81,34 @@
 
   // Return all elements of an array that pass a truth test.
   _.filter = function(collection, test) {
+    let result = [];
+    _.each(collection, function(element, idx, array) {
+      if (test(element, idx, array)) { result.push(element); }
+    });
+    return result;
   };
 
   // Return all elements of an array that don't pass a truth test.
   _.reject = function(collection, test) {
     // TIP: see if you can re-use _.filter() here, without simply
     // copying code in and modifying it
+    let rejects = _.filter(collection, test);  // Creates an array of the elements we do not want
+    return _.filter(collection, function(element, idx, array) {
+      if (_.indexOf(rejects,element) < 0) { return true; } // Filters out the elements that are in 'rejects'
+    });
   };
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array, isSorted, iterator) {
+    // iterator = iterator || _.identity;
+    // isSorted = isSorted || true;
+    // let results = [];
+    // _.each(array, function(el, idx, array) {
+    //   if (_.indexOf(results, el) < 0 && isSorted) {
+    //     results.push(iterator(el));
+    //   }
+    // });
+    // return results;
   };
 
 
@@ -98,6 +117,11 @@
     // map() is a useful primitive iteration function that works a lot
     // like each(), but in addition to running the operation on all
     // the members, it also maintains an array of results.
+    let results = [];
+    _.each(collection, function(el) {
+      results.push(iterator(el));
+    });
+    return results;
   };
 
   /*
@@ -139,6 +163,32 @@
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
+    // Case if accumulator is present
+    if (accumulator || typeof accumulator === 'number' || typeof accumulator === 'string' || Array.isArray(accumulator)  || typeof accumulator == 'boolean') {
+      _.each(collection, function(element) {
+        accumulator = iterator(accumulator, element);
+      });
+      return accumulator;
+    } else { // Cases where accumulator is not present
+      if (Array.isArray(collection)) {
+        // Case for if collection is an array
+        accumulator = collection[0];
+        _.each(collection.slice(1), function(element) {
+          accumulator = iterator(accumulator, element);
+        });
+        return accumulator;
+      } else {
+        // Case for if collection is an object
+        _.each(collection, function(element) {
+          if (accumulator === undefined) { 
+            accumulator = element;
+          } else {
+            accumulator = iterator(accumulator, element);
+          }
+        });
+        return accumulator;
+      }
+    }
   };
 
   // Determine if the array or object contains a given value (using `===`).
