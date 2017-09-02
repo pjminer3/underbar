@@ -39,6 +39,7 @@
   // last element.
   _.last = function(array, n) {
     if (n > array.length) { return array; } // Returns entire array if n is larger then array.length
+    // else
     return n === undefined ? array[array.length - 1] : array.slice(array.length - n);
   };
 
@@ -59,7 +60,6 @@
         iterator(collection[key], key, collection);
       }
     }
-    //console.log(i);
   };
 
   // Returns the index at which value can be found in the array, or -1 if value
@@ -68,24 +68,24 @@
     // TIP: Here's an example of a function that needs to iterate, which we've
     // implemented for you. Instead of using a standard `for` loop, though,
     // it uses the iteration helper `each`, which you will need to write.
-    var result = -1;
+    var result = -1; // Base status in case the target is not in the array
 
-    _.each(array, function(item, index) {
+    _.each(array, (item, index) => {
       if (item === target && result === -1) {
-        result = index;
+        result = index; // Changes the result to the index of the first instance of the target
       }
     });
 
-    return result;
+    return result;  // Returns either -1 or the index of the first target
   };
 
   // Return all elements of an array that pass a truth test.
   _.filter = function(collection, test) {
-    let result = [];
-    _.each(collection, function(element, idx, array) {
-      if (test(element, idx, array)) { result.push(element); }
+    let result = []; // Creates the empty array for truthy results
+    _.each(collection, (element, idx, array) => {
+      if (test(element, idx, array)) { result.push(element); } // Pushes elements that pass the test into array
     });
-    return result;
+    return result;// returns array of elements that passed the test
   };
 
   // Return all elements of an array that don't pass a truth test.
@@ -93,22 +93,25 @@
     // TIP: see if you can re-use _.filter() here, without simply
     // copying code in and modifying it
     let rejects = _.filter(collection, test);  // Creates an array of the elements we do not want
-    return _.filter(collection, function(element, idx, array) {
-      if (_.indexOf(rejects,element) < 0) { return true; } // Filters out the elements that are in 'rejects'
+    return _.filter(collection, (element, idx, array) => {
+      if (_.indexOf(rejects,element) < 0) { return true; } // Filters out the elements that are in the rejects array, only returning elements that are not
     });
   };
 
   // Produce a duplicate-free version of the array.
+  // NOT DONE WITH THIS ONE YET
   _.uniq = function(array, isSorted, iterator) {
-    // iterator = iterator || _.identity;
-    // isSorted = isSorted || true;
-    // let results = [];
-    // _.each(array, function(el, idx, array) {
-    //   if (_.indexOf(results, el) < 0 && isSorted) {
-    //     results.push(iterator(el));
-    //   }
-    // });
-    // return results;
+    console.log(isSorted);
+    console.log(iterator);
+    iterator = iterator || _.identity;
+    isSorted = isSorted || true;
+    let results = [];
+    _.each(array, (el, idx, array) => {
+      if (_.indexOf(results, el) < 0 && isSorted) {
+        results.push(iterator(el));
+      }
+    });
+    return results;
   };
 
 
@@ -118,7 +121,7 @@
     // like each(), but in addition to running the operation on all
     // the members, it also maintains an array of results.
     let results = [];
-    _.each(collection, function(el) {
+    _.each(collection, (el) => {
       results.push(iterator(el));
     });
     return results;
@@ -137,9 +140,7 @@
     // TIP: map is really handy when you want to transform an array of
     // values into a new array of values. _.pluck() is solved for you
     // as an example of this.
-    return _.map(collection, function(item){
-      return item[key];
-    });
+    return _.map(collection, (item) => item[key]);
   };
 
   // Reduces an array or object to a single value by repetitively calling
@@ -165,7 +166,7 @@
   _.reduce = function(collection, iterator, accumulator) {
     // Case if accumulator is present
     if (accumulator || typeof accumulator === 'number' || typeof accumulator === 'string' || Array.isArray(accumulator)  || typeof accumulator == 'boolean') {
-      _.each(collection, function(element) {
+      _.each(collection, (element) => {
         accumulator = iterator(accumulator, element);
       });
       return accumulator;
@@ -173,13 +174,13 @@
       if (Array.isArray(collection)) {
         // Case for if collection is an array
         accumulator = collection[0];
-        _.each(collection.slice(1), function(element) {
+        _.each(collection.slice(1), (element) => {
           accumulator = iterator(accumulator, element);
         });
         return accumulator;
       } else {
         // Case for if collection is an object
-        _.each(collection, function(element) {
+        _.each(collection, (element) => {
           if (accumulator === undefined) { 
             accumulator = element;
           } else {
@@ -195,7 +196,7 @@
   _.contains = function(collection, target) {
     // TIP: Many iteration problems can be most easily expressed in
     // terms of reduce(). Here's a freebie to demonstrate!
-    return _.reduce(collection, function(wasFound, item) {
+    return _.reduce(collection, (wasFound, item) => {
       if (wasFound) {
         return true;
       }
@@ -208,7 +209,7 @@
   _.every = function(collection, iterator) {
     // TIP: Try re-using reduce() here.
     iterator = iterator || _.identity;
-    return _.reduce(collection, function(status, el) {
+    return _.reduce(collection, (status, el) => {
       if (!status) {
         return false;
       } else {
@@ -222,7 +223,7 @@
   _.some = function(collection, iterator) {
     // TIP: There's a very clever way to re-use every() here.
     iterator = iterator || _.identity;
-    return _.reduce(collection, function(status, el) {
+    return _.reduce(collection, (status, el) => {
       if (status) {
         return true;
       } else {
@@ -260,23 +261,23 @@
     // return obj;
 
     // Using _.reduce
-    return _.reduce(arguments, function(object, extendingObj) {
+    return _.reduce(arguments, (object, extendingObj) => {
       for (let key in extendingObj) {
         object[key] = extendingObj[key];
       }
       return object;
-    })
+    });
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
-    return _.reduce(arguments, function(object, extendingObj) {
+    return _.reduce(arguments, (object, extendingObj) => {
       for (let key in extendingObj) {
         if (!object.hasOwnProperty(key)) { object[key] = extendingObj[key]; }
       }
       return object;
-    })
+    });
   };
 
 
@@ -383,7 +384,7 @@
   // Calls the method named by functionOrKey on each value in the list.
   // Note: You will need to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
-
+    
   };
 
   // Sort the object's values by a criterion produced by an iterator.
